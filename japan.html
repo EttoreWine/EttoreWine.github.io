@@ -1,0 +1,60 @@
+<html>
+<head>
+  <script src='https://api.mapbox.com/mapbox-gl-js/v1.11.1/mapbox-gl.js'></script>
+  <link href='https://api.mapbox.com/mapbox-gl-js/v1.11.1/mapbox-gl.css' rel='stylesheet' />
+  <link rel="stylesheet" href="mapj.css">
+  <script>
+
+  </script>
+</head>
+<body>
+  <div id='map'></div>
+  <div class='map-overlay' id='features'><h2>Wine per capita consumption</h2><div id='pd'><p>Hover over a region!</p></div></div>
+  <div class='map-overlay' id='legend'></div>
+  <div class='cit-overlay' id='citation'><p>Source: Japanese National Tax Agency</p>
+  <p>April 2018~March 2019 period</p></div>
+
+  <script>
+  mapboxgl.accessToken = 'pk.eyJ1IjoiZXR0b3JlZCIsImEiOiJja2NsNGR5azIxd3QwMndvMzVzZXBobnl6In0.z-ZstViUQZn2xVSP4MAvhA';
+  var map = new mapboxgl.Map({
+  container: 'map',
+  style: 'mapbox://styles/ettored/ckcypbmbr0xj31iqafkd39y36', // stylesheet location
+  center: [136.0, 39.1], // starting position [lng, lat]
+  zoom: 4.4
+  });
+
+  map.on('load', function() {
+    // the rest of the code will go in here
+    var layers = ['0-1.9', '2.0-2.9', '3.0-3.9', '4.0-6.9','7.0-7.9', '8.0+'];
+    var colors = ['#FFFFFF', '#FED976', '#FD8D3C', '#FC4E2A', '#E31A1C', '#800026'];
+    for (i = 0; i < layers.length; i++) {
+      var layer = layers[i];
+      var color = colors[i];
+      var item = document.createElement('div');
+      var key = document.createElement('span');
+      key.className = 'legend-key';
+      key.style.backgroundColor = color;
+
+      var value = document.createElement('span');
+      value.innerHTML = layer;
+      item.appendChild(key);
+      item.appendChild(value);
+      legend.appendChild(item);
+    }
+  });
+
+  map.on('mousemove', function(e) {
+    var states = map.queryRenderedFeatures(e.point, {
+      layers: ['prefectures']
+    });
+
+    if (states.length > 0) {
+    document.getElementById('pd').innerHTML = '<h3><strong>' + states[0].properties.NAME + '</strong></h3><p><strong><em>' + states[0].properties.consum + '</strong>L per person</em></p>';
+    } else {
+      document.getElementById('pd').innerHTML = '<p>Hover over a prefecture!</p>';
+    }
+  });
+  map.getCanvas().style.cursor = 'default';
+  </script>
+</body>
+</html>
